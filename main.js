@@ -51,9 +51,9 @@ fechaDespido = new Date(fechaDespido);
 
 console.log(`Fecha ingresada valida ${fechaDespido}`);
 
-// CALCULO DE ANTIGUEDAD EXACTA  --------------------------------------------------------------------------------------
+// CALCULO DE ANTIGUEDAD  --------------------------------------------------------------------------------------
 
-let antiguedadEnMilisegundos = fechaDespido - fechaIngreso; // CALCULA LA DIFERENCIA ENTRE FECHAS EN MILISEGUNDOS (NI IDEA PORQUE)
+let antiguedadEnMilisegundos = fechaDespido - fechaIngreso; // CALCULA LA DIFERENCIA ENTRE FECHAS EN MILISEGUNDOS
 let antiguedadEnDias = antiguedadEnMilisegundos / (1000 * 60 * 60 * 24); //PASA MILISEGUNDOS A DIAS
 let antiguedadEnMeses = Math.floor(antiguedadEnDias / 30); // PASA LOS DIAS A MESES
 let antiguedadEnAños = Math.floor(antiguedadEnMeses / 12); // PASA LOS MESES A AÑOS
@@ -120,7 +120,7 @@ function calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños,
   };
 
     while(indemnizacion != 0){
-     let preaviso = confirm("recibiste un preaviso con 30 dias de anticipacion?")
+     let preaviso = confirm("si recibiste un preaviso con 30 dias de anticipacion hace click en ACEPTAR")
 
       if (preaviso == false) {
        alert(`${nombreUsuario}, tu indemnizacion es de: $${indemnizacion + sueldoUsuario }`);
@@ -132,5 +132,3 @@ function calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños,
  
   calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños, sueldoUsuario)
  
- 
-  console.log("FIN")
