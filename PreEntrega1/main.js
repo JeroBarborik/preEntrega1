@@ -1,4 +1,14 @@
-//BIENVENIDA 
+// 1 - BIENVENIDA 
+// 2 - TOMA DE DATOS
+// 3 - CALCULO DE ANTIGUEDAD
+// 4 - CALCULO DE INDEMNIZACION
+// 5 - CAPTACION
+// 6 - ARRAY PARA ALMACENAR DATOS DE CONSULTANTES
+
+
+
+// BIENVENIDA
+
 function bienvenida() {
   alert(
     "Bienvenido!, te despidieron? segui los pasos y calcula tu indemnizacion en pocos minutos."
@@ -51,9 +61,9 @@ fechaDespido = new Date(fechaDespido);
 
 console.log(`Fecha ingresada valida ${fechaDespido}`);
 
-// CALCULO DE ANTIGUEDAD EXACTA  --------------------------------------------------------------------------------------
+// CALCULO DE ANTIGUEDAD  --------------------------------------------------------------------------------------
 
-let antiguedadEnMilisegundos = fechaDespido - fechaIngreso; // CALCULA LA DIFERENCIA ENTRE FECHAS EN MILISEGUNDOS (NI IDEA PORQUE)
+let antiguedadEnMilisegundos = fechaDespido - fechaIngreso; // CALCULA LA DIFERENCIA ENTRE FECHAS EN MILISEGUNDOS
 let antiguedadEnDias = antiguedadEnMilisegundos / (1000 * 60 * 60 * 24); //PASA MILISEGUNDOS A DIAS
 let antiguedadEnMeses = Math.floor(antiguedadEnDias / 30); // PASA LOS DIAS A MESES
 let antiguedadEnAños = Math.floor(antiguedadEnMeses / 12); // PASA LOS MESES A AÑOS
@@ -120,7 +130,7 @@ function calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños,
   };
 
     while(indemnizacion != 0){
-     let preaviso = confirm("recibiste un preaviso con 30 dias de anticipacion?")
+     let preaviso = confirm("si recibiste un preaviso con 30 dias de anticipacion hace click en ACEPTAR")
 
       if (preaviso == false) {
        alert(`${nombreUsuario}, tu indemnizacion es de: $${indemnizacion + sueldoUsuario }`);
@@ -131,6 +141,43 @@ function calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños,
     }
  
   calcularIndemnizacion(nombreUsuario, mesesRestantes, antiguedadEnAños, sueldoUsuario)
+
+  //CAPTACION DEL CONSULTANTE
+  
+
+let captacion = alert("Este fue un calculo aproximado. Te vamos a pedir algunos datos para contactarte y asesorarte de la mejor forma para que puedas cobrar ese dinero.")
+
+let telefono;
+
+do {
+  telefono = prompt("Ingrese su numero de telefono (ej: 1122334455):");
+
+  if (isNaN(telefono) || telefono.length !== 10) {
+    alert("Por favor, ingrese un número de teléfono válido con 10 dígitos.");
+  }
+} while (isNaN(telefono) || telefono.length !== 10);
+
+const Contacto = function(email, telefono) {
+  const pruebaEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Validar el formato del correo electrónico
  
- 
-  console.log("FIN")
+  while (!pruebaEmail.test(email)) {
+    alert("Por favor, ingresa una dirección de correo válida.")
+    email = prompt("Ingrese su casilla de mail:")
+  };
+
+  this.email = email
+  this.telefono = telefono
+}
+
+let datosContacto1 = new Contacto(
+  prompt("Ingrese su casilla de mail:"),
+  telefono
+);
+
+
+//ARRAY DONDE SE VAN A PUSHEAR Y ALMACENAR TODOS LOS CONSULTANTES
+
+let consultantes = []; 
+
+consultantes.push(datosContacto1)
+
