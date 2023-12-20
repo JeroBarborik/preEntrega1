@@ -5,6 +5,29 @@
 // 5 - CAPTACION
 // 6 - ARRAY PARA ALMACENAR DATOS DE CONSULTANTES
 
+/*
+ENTREGA FINAL: 
+OBJETOS Y ARRAYS - OK
+FUNCIONES Y CONDICIONALES - OK
+GENERACION DEL DOM EN FORMA DINAMICA, EVENTOS  - OK
+SINTAXIS AVANZADA  - OK 
+USO DE UNA LIBRERIA  - OK 
+ASINCRONIA, SETTIMEOUT  - OK
+
+
+MANEJO DE PROMESAS CON FETCH  - ok
+CARGA DE DATOS DESDE UN JSON LOCAL - ok
+
+
+SOLO FALTA USAR DATOS DEUNA API EXTERNA. 
+
+
+
+
+
+
+
+*/
 // BIENVENIDA
 const body = document.querySelector("body");
 
@@ -20,6 +43,8 @@ function bienvenida() {
 }
 
 bienvenida();
+
+//FORMULARIO - TOMA DE DATOS
 
 function formulario() {
   const formularioExistente = document.getElementById("formulario");
@@ -59,36 +84,71 @@ function formulario() {
     e.preventDefault();
 
     const pais = document.getElementById("pais").value.trim();
-    const fechaIngreso = new Date(document.getElementById("fechaIngreso").value);
-    const fechaDespido = new Date(document.getElementById("fechaDespido").value);
+    const fechaIngreso = new Date(
+      document.getElementById("fechaIngreso").value
+    );
+    const fechaDespido = new Date(
+      document.getElementById("fechaDespido").value
+    );
+    const sueldo = document.getElementById("sueldo").value;
+    let fechaActual = new Date();
+    console.log(fechaActual);
+
+    //VALIDACION DE PAIS
 
     if (pais && pais.toLowerCase() === "argentina") {
       console.log("Es de Argentina, se puede continuar");
     } else {
-      alert(
-        "Lamentablemente, si no trabajabas en Argentina no podemos ayudarte. Busca un abogado de tu zona"
-      );
+      Swal.fire({
+        text: "Lamentablemente, si no trabajabas en Argentina no podemos ayudarte. Busca un abogado de tu zona",
+        icon: "warning",
+      });
+
       console.log("No es de Argentina, no se puede continuar");
       return;
     }
 
+    //VALIDACION DE FECHAS  
     if (fechaIngreso) {
       console.log("Fecha ingresada válida " + fechaIngreso);
     } else {
-      alert("Fecha no válida");
+      Swal.fire("Fecha no válida");
       return;
     }
 
-    if (fechaDespido) {
-      console.log("Fecha ingresada válida " + fechaDespido);
-    } else {
-      alert("Fecha no válida");
+    if (fechaDespido > fechaActual) {
+      Swal.fire({
+        text: "Fecha de despido no válida, deber ser anterior al dia de hoy",
+        icon: "warning",
+      });
       return;
+    } else if (fechaDespido < fechaIngreso) {
+      Swal.fire({
+        text: "Fecha de despido no válida, deber ser posterior a la fecha de ingreso",
+        icon: "warning",
+      });
+      return;
+    } else {
+      console.log("Fecha ingresada válida " + fechaDespido);
+    }
+
+    //VALIDACION DE SUELDO
+
+    if (isNaN(sueldo) || sueldo == 0 || sueldo == "") {
+      Swal.fire({
+        text: "Debes ingresar un sueldo valido",
+        icon: "warning",
+      });
+      return;
+    } else {
+      console.log("sueldo ingresado valido");
     }
 
     // si pasa las validaciones, y envía el formulario
     const resultadoAntiguedad = calcularAntiguedad(fechaIngreso, fechaDespido);
     calcularIndemnizacion(resultadoAntiguedad);
+
+    boton1.style.display = "none"
   });
 
   const boton1 = form.querySelector("button[type='submit']");
@@ -98,6 +158,9 @@ function formulario() {
 }
 
 formulario();
+
+
+//CALCULO DE ANTIGUEDAD
 
 function calcularAntiguedad(fechaIngreso, fechaDespido) {
   let antiguedadEnMilisegundos = fechaDespido - fechaIngreso;
@@ -114,20 +177,15 @@ function calcularAntiguedad(fechaIngreso, fechaDespido) {
     console.log(
       `Tiene ${antiguedadEnAños} año/s y ${mesesRestantes} mes/es de antigüedad.`
     );
-
-    return {
-      mesesRestantes: mesesRestantes,
-      antiguedadEnAños: antiguedadEnAños,
-    };
   }
-
-  // Si la antigüedad es menor a 3 meses, devolver 0 para ambas propiedades
   return {
-    mesesRestantes: 0,
-    antiguedadEnAños: 0,
+    mesesRestantes: mesesRestantes,
+    antiguedadEnAños: antiguedadEnAños,
   };
 }
 
+
+//CALCULO DE INDEMNIZACION
 
 function calcularIndemnizacion(resultadoAntiguedad) {
   let sueldoUsuario = parseInt(document.getElementById("sueldo").value);
@@ -136,55 +194,85 @@ function calcularIndemnizacion(resultadoAntiguedad) {
   let mesesRestantes = resultadoAntiguedad.mesesRestantes;
   let antiguedadEnAños = resultadoAntiguedad.antiguedadEnAños;
 
+  console.log("antiguedadEnAños:", antiguedadEnAños);
+  console.log("mesesRestantes:", mesesRestantes);
+
   let indemnizacion;
 
   if (antiguedadEnAños === 0 && mesesRestantes > 3) {
     indemnizacion = sueldoUsuario;
-    console.log(`$${indemnizacion} es la indemnizacion sin cobrar preaviso (A)`);
+    console.log(
+      `$${indemnizacion} es la indemnizacion sin cobrar preaviso (A)`
+    );
   } else if (antiguedadEnAños !== 0 && mesesRestantes < 3) {
     indemnizacion = sueldoUsuario * antiguedadEnAños;
-    console.log(`$${indemnizacion} es la indemnizacion sin cobrar preaviso (B)`);
+    console.log(
+      `$${indemnizacion} es la indemnizacion sin cobrar preaviso (B)`
+    );
   } else if (antiguedadEnAños !== 0 && mesesRestantes >= 3) {
     indemnizacion = sueldoUsuario * antiguedadEnAños + sueldoUsuario;
-    console.log(`$${indemnizacion} es la indemnizacion sin cobrar preaviso (C)`);
+    console.log(
+      `$${indemnizacion} es la indemnizacion sin cobrar preaviso (C)`
+    );
   } else {
     indemnizacion = 0;
-    alert("Al haber trabajado menos de tres meses, no te corresponde una indemnizacion.");
+    Swal.fire({
+      text: "Al haber trabajado menos de 3 meses no te corresponde indemnizacion.",
+      icon: "info",
+    });
   }
 
   if (indemnizacion !== 0) {
-    if (preaviso) {
-      indemnizacion = indemnizacion;
-    } else {
-      indemnizacion = indemnizacion + sueldoUsuario;
+    preaviso
+      ? (indemnizacion = indemnizacion)
+      : (indemnizacion = indemnizacion + sueldoUsuario);
+
+    console.log(indemnizacion);
+  }
+  function numeroFinal() {
+    Swal.fire({
+      text: "Tu indemnizacion es de: $" + indemnizacion,
+    });
+
+    const numeroFinal = document.createElement("h1");
+    numeroFinal.textContent = "Tu indemnizacion es de: $" + indemnizacion;
+    body.appendChild(numeroFinal);
+  }
+  numeroFinal();
+
+  function aclaracion() {
+    setTimeout(() => {
+      Swal.fire({
+        text: "La cifra es aproximada, para mas informacion carga tus datos de contacto",
+        icon: "info",
+      });
+    }, 2500);
+  }
+  aclaracion();
+
+
+  //FUNCION QUE CONSTRUYE CONTACTO
+
+  const Contacto = function (nombre, apellido, email, numero, localidad) {
+    this.nombre = nombre;
+    this.apellido = apellido;
+    this.email = email;
+    this.numero = numero;
+    this.localidad = localidad;
+  };
+  
+
+  //FORMULARIO DE CONTACTO
+
+  function formularioContacto() {
+    const botonExistente = document.getElementById("botonPideContacto");
+    if (botonExistente) {
+      botonExistente.remove();
     }
-  }
-  const numeroFinal = document.createElement("h1");
-  numeroFinal.textContent = "Tu indemnizacion es de: $" + indemnizacion;
-  body.appendChild(numeroFinal);
 
-  const aclaracion = document.createElement("h3");
-  aclaracion.textContent = "(Los montos son aproximados, para mas informacion carga tus datos de contacto y nos comunicamos)";
-  numeroFinal.appendChild(aclaracion);
-}
-
-const Contacto = function (nombre, apellido, email, numero, localidad) {
-  this.nombre = nombre;
-  this.apellido = apellido;
-  this.email = email;
-  this.numero = numero;
-  this.localidad = localidad;
-};
-
-
-function formularioContacto() {
-  const botonExistente = document.getElementById("botonPideContacto");
-  if (botonExistente) {
-    botonExistente.remove();
-  }
-
-  const formContacto = document.createElement("form");
-  formContacto.innerHTML = `
+    const formContacto = document.createElement("form");
+    formContacto.id = "formContacto"
+    formContacto.innerHTML = `
     <label for="nombre" class= "label">Nombre: </label>
     <input id="nombre" class= "input" type="text" step="0.01" required>
 
@@ -207,99 +295,193 @@ function formularioContacto() {
     <button type="submit" class="button">Enviar</button>
   `;
 
-  formContacto.addEventListener("submit", function (e) {
-    e.preventDefault();
+    formContacto.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const email = document.getElementById("email").value;
-    const numero = parseInt(document.getElementById("numero").value);
-    const localidad = document.getElementById("localidad").value.trim();
+      
 
+      const nombre = document.getElementById("nombre").value;
+      const apellido = document.getElementById("apellido").value;
+      const email = document.getElementById("email").value;
+      const numero = parseInt(document.getElementById("numero").value);
+      const localidad = document.getElementById("localidad").value.trim();
 
-    const localidadesValidas = [
-      "CABA",
-      "CAPITAL FEDERAL",
-      "CIUDAD AUTONOMA DE BUENOS AIRES",
-      "AVELLANEDA",
-      "LANUS",
-      "LOMAS DE ZAMORA",
-      "LA MATANZA",
-      "QUILMES",
-      "VICENTE LOPEZ",
-      "SAN MARTIN",
-      "TRES DE FEBRERO",
-      "MORON",
-      "EZEIZA",
-      "FLORENCIO VARELA",
-      "BERAZATEGUI",
-      "MERLO",
-      "MORENO",
-      "SAN MIGUEL",
-      "SAN ISIDRO",
-      "SAN FERNANDO",
-      "TIGRE",
-    ];
+      const localidadesValidas = [
+        "CABA",
+        "CAPITAL FEDERAL",
+        "CIUDAD AUTONOMA DE BUENOS AIRES",
+        "AVELLANEDA",
+        "LANUS",
+        "LOMAS DE ZAMORA",
+        "LA MATANZA",
+        "QUILMES",
+        "VICENTE LOPEZ",
+        "SAN MARTIN",
+        "TRES DE FEBRERO",
+        "MORON",
+        "EZEIZA",
+        "FLORENCIO VARELA",
+        "BERAZATEGUI",
+        "MERLO",
+        "MORENO",
+        "SAN MIGUEL",
+        "SAN ISIDRO",
+        "SAN FERNANDO",
+        "TIGRE",
+      ];
 
-    function filtrarLocalidad(localidad) {
-      let resultado = localidadesValidas.filter(
-        (x) => x.toUpperCase().includes(localidad.toUpperCase())
-      );
+      function filtrarLocalidad(localidad) {
+        let resultado = localidadesValidas.filter((x) =>
+          x.toUpperCase().includes(localidad.toUpperCase())
+        );
 
-      if (resultado.length > 0) {
-        console.log("Podemos ejercer en su localidad. Posible cliente.");
-      } else {
-        console.log("No contamos con matrícula para ejercer en su localidad.");
+        resultado.length > 0
+          ? console.log("Podemos ejercer en su localidad. Posible cliente.")
+          : console.log(
+              "No contamos con matrícula para ejercer en su localidad."
+            );
       }
-    }
+      filtrarLocalidad(localidad);
 
-    filtrarLocalidad(localidad);
+      const datosContacto1 = new Contacto(
+        nombre,
+        apellido,
+        email,
+        numero,
+        localidad
+      );
+      botonPideContacto.style.display = "none"
 
-    const datosContacto1 = new Contacto(
-      nombre,
-      apellido,
-      email,
-      numero,
-      localidad
-    );
-    botonPideContacto.disabled = true;
+      datosContactoEnJson = JSON.stringify(datosContacto1);
+
+      localStorage.setItem("contacto1", datosContactoEnJson);
+
+      Swal.fire({
+        text: "Gracias!, pronto te estaremos contactando.",
+        icon: "success",
+      });
+
+  // ARRAY DONDE SE VAN A PUSHEAR Y ALMACENAR TODOS LOS CONSULTANTES
 
 
-    datosContactoEnJson = JSON.stringify(datosContacto1);
+      let consultantes = [];
+      consultantes.push(datosContacto1);
+      console.log(consultantes);
+    });
 
-    localStorage.setItem("contacto1", datosContactoEnJson);
-
-    alert("Pronto te estaremos contactando. ¡Gracias!");
-
-    // ARRAY DONDE SE VAN A PUSHEAR Y ALMACENAR TODOS LOS CONSULTANTES
-    let consultantes = [];
-    consultantes.push(datosContacto1);
-    console.log(consultantes);
-  });
-
-  formContacto.classList.add("form");
-  body.appendChild(formContacto);
-  botonPideContacto.classList.add("button");
-  body.appendChild(botonPideContacto);
-}
+    formContacto.classList.add("form");
+    body.appendChild(formContacto);
+    botonPideContacto.classList.add("button");
+    body.appendChild(botonPideContacto);
+  }
 
   const botonPideContacto = document.createElement("button");
   botonPideContacto.id = "botonPideContacto";
   botonPideContacto.classList.add("button");
   botonPideContacto.textContent = "Quiero que me contacten";
   botonPideContacto.addEventListener("click", function () {
+    botonPideContacto.style.display = "none"
     formularioContacto();
-    botonPideContacto.disabled = true; // Desactivar solo el botón presionado
+    
   });
-
 
   body.appendChild(botonPideContacto);
 
+  if (!document.getElementById("botonPideContacto")) {
+    formularioContacto();
+  }
 
-if (!document.getElementById("botonPideContacto")) {
-  formularioContacto();
+
+
+
+  
+  //FUNCION QUE CONSUME EL ARCHIVO JSON
+
+
+  function info() {
+    fetch("articulos.json")
+      .then((response) => response.json())
+      .then((data) => {
+        const articulos = data.articulos;
+  
+        const articulosContainer = document.createElement("div");
+        articulosContainer.id = "articulosContainer";
+  
+        articulos.forEach((articulo) => {
+          const articulosElement = document.createElement("p");
+          articulosElement.textContent = `${articulo.articulo} : ${articulo.texto}`;
+          articulosContainer.appendChild(articulosElement)
+            document.body.appendChild(articulosContainer)
+  
+            
+        })
+        
+      })
+    
+  }
+
+  
+  let botonInfo = document.createElement("button")
+  botonInfo.id = "botonInfo"
+  botonInfo.classList.add("botonInfo")
+  botonInfo.textContent = "INFO"
+  botonInfo.addEventListener("click", info)
+  botonInfo.addEventListener("click", function () {
+    botonInfo.style.display = "none"})
+  document.body.appendChild(botonInfo)
+ 
 }
 
 
+//SE LE AGREGA EL CONSUMO DE LA API DE DOLAR PARA COMPLETAR TODOS LOS PUNTOS DEL PROYECTO, NO ENCONTRE OTRA API PUBLICA QUE ME SIRVA
 
+let dolar = document.createElement("div")
+dolar.id = "dolar"
+dolar.classList.add("dolar")
+document.body.appendChild(dolar)
+
+
+let urlDolarOficial = "https://dolarapi.com/v1/dolares/oficial"
+fetch(urlDolarOficial)
+.then( (response) => response.json())
+.then((data) => {
+  const dolarOficial = document.createElement("table")
+  dolarOficial.id = "dolarOficial"
+  dolarOficial.innerHTML = `
+  <tr>
+    <th>Dolar ${data.nombre}</th>
+  </tr>
+  <tr>
+    <td>Compra:${data.compra}</td>
+  </tr>
+  <tr>
+    <td>Venta:${data.venta}</td>
+  </tr>
+`
+  dolar.appendChild(dolarOficial)
+})
+
+
+
+let urlDolarBlue = "https://dolarapi.com/v1/dolares/blue"
+fetch(urlDolarBlue)
+.then( (response) => response.json())
+.then((data) => {
+  const dolarBlue = document.createElement("table")
+  dolarBlue.id = "dolarBlue"
+  dolarBlue.innerHTML =
+  `
+  <tr>
+    <th>Dolar ${data.nombre}</th>
+  </tr>
+  <tr>
+    <td>Compra:${data.compra}</td>
+  </tr>
+  <tr>
+    <td>Venta:${data.venta}</td>
+  </tr>
+
+`
+  dolar.appendChild(dolarBlue)
+})
 
